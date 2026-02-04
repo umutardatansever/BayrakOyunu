@@ -35,22 +35,40 @@ const state = {
 
 // Similar flags groups for hard modes
 const SIMILAR_FLAGS = [
-    ['RO', 'TD', 'AD'], // Romania, Chad, Andorra (blue-yellow-red vertical)
-    ['ID', 'MC', 'PL'], // Indonesia, Monaco, Poland (red-white horizontal)
-    ['NL', 'LU', 'HR'], // Netherlands, Luxembourg (similar tricolors)
-    ['IE', 'CI'], // Ireland, Ivory Coast (green-white-orange)
-    ['AU', 'NZ'], // Australia, New Zealand
-    ['NO', 'IS'], // Norway, Iceland
-    ['CO', 'EC', 'VE'], // Colombia, Ecuador, Venezuela
-    ['SN', 'ML', 'GN'], // Senegal, Mali, Guinea
-    ['BE', 'DE'], // Belgium, Germany (similar colors)
-    ['AT', 'LV', 'PL'], // Austria, Latvia (red-white)
-    ['RU', 'SK', 'SI'], // Russia, Slovakia, Slovenia
-    ['HU', 'IT', 'MX'], // Similar tricolors
-    ['EE', 'BW'], // Estonia, Botswana (blue tones)
-    ['MY', 'US', 'LR'], // Malaysia, USA, Liberia (stripes with box)
-    ['AR', 'GT', 'SV'], // Argentina, Guatemala, El Salvador (blue-white)
-    ['AE', 'KW', 'JO', 'PS'], // Arab countries with similar design
+    ['RO', 'TD', 'AD', 'MD'], // Romania, Chad, Andorra, Moldova (blue-yellow-red vertical)
+    ['ID', 'MC', 'PL', 'SG', 'AT', 'PE', 'LV', 'TR', 'TN'], // Red & White (Indonesia, Poland, Monaco, Austria, Peru, Latvia...)
+    ['NL', 'LU', 'HR', 'PY', 'FR', 'RU'], // Red-White-Blue tricolors
+    ['IE', 'CI', 'IT', 'MX'], // Ireland, Ivory Coast, Italy, Mexico
+    ['AU', 'NZ', 'GB', 'FJ', 'TV'], // Union Jack flags
+    ['NO', 'IS', 'DK', 'SE', 'FI', 'FO'], // Nordic crosses
+    ['CO', 'EC', 'VE'], // Gran Colombia colors
+    ['SN', 'ML', 'GN', 'GH', 'ET', 'CG'], // Pan-African colors (Green-Yellow-Red)
+    ['BE', 'DE'], // Belgium, Germany
+    ['RU', 'SK', 'SI', 'RS', 'HR'], // Slavic tricolors (White-Blue-Red)
+    ['EE', 'BW', 'NI', 'HN', 'SV', 'GT', 'AR'], // Blue-White-Black/Blue-White
+    ['MY', 'US', 'LR', 'PR', 'CU', 'CL'], // Stripes & Stars themes
+    ['AE', 'KW', 'JO', 'PS', 'SD'], // Pan-Arab colors
+    ['JP', 'BD', 'PW'], // Circle flags
+    ['CH', 'TO', 'TR', 'TN', 'PK', 'MR'], // Star & Crescent or Cross variants
+];
+
+// Countries with similar names (Phonetic or textual similarity)
+const SIMILAR_NAMES = [
+    ['MY', 'MZ', 'MW', 'ML', 'MV', 'MT'], // Malaysia, Mozambique, Malawi, Mali, Maldives, Malta
+    ['SK', 'SI'], // Slovakia, Slovenia
+    ['GN', 'GW', 'GQ', 'GY', 'GH'], // Guinea group + Guyana + Ghana
+    ['DM', 'DO'], // Dominica, Dominican Republic
+    ['NE', 'NG'], // Niger, Nigeria
+    ['PY', 'UY'], // Paraguay, Uruguay
+    ['IQ', 'IR', 'IE'], // Iraq, Iran, Ireland
+    ['AT', 'AU'], // Austria, Australia
+    ['SE', 'CH', 'SZ'], // Sweden, Switzerland, Eswatini
+    ['LV', 'LT', 'LR', 'LB', 'LS', 'LY'], // L-countries
+    ['TR', 'TN', 'TM'], // Turkey, Tunisia, Turkmenistan
+    ['KP', 'KR'], // Koreas
+    ['CD', 'CG'], // Congos
+    ['ZM', 'ZW'], // Zambia, Zimbabwe
+    ['SO', 'SD', 'SS'], // Somalia, Sudan
 ];
 
 // Level definitions with creative names
@@ -292,16 +310,10 @@ function generateQuiz() {
     selected.forEach(correctCountry => {
         let wrongAnswers;
 
-        // For similar flags mode, use confusing similar flags as wrong answers
-        if (levelConfig.similar) {
-            wrongAnswers = getSimilarWrongAnswers(correctCountry, availableCountries);
-        } else {
-            // Get 3 random wrong answers from the same pool
-            wrongAnswers = levelCountries
-                .filter(c => c.name.common !== correctCountry.name.common)
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 3);
-        }
+        // Use smart distractors for all levels to prevent elimination method
+        // But respect "similar" mode which forces only very similar ones if possible
+        const forceSimilar = levelConfig.similar || false;
+        wrongAnswers = getSmartDistractors(correctCountry, availableCountries, 3, forceSimilar);
 
         // Combine and shuffle options
         const options = [correctCountry, ...wrongAnswers]
@@ -342,38 +354,68 @@ function getSimilarFlagsCountries(allCountries) {
     return similarCountries;
 }
 
-// Get similar looking flags as wrong answers
-function getSimilarWrongAnswers(correctCountry, allCountries) {
+// Smart Distractor Generation
+function getSmartDistractors(correctCountry, allCountries, count = 3, forceHard = false) {
     const correctCode = correctCountry.cca2;
+    // Helper to check identity safely (fallback to name if cca2 missing)
+    const isSameCountry = (c1, c2) => {
+        if (c1.cca2 && c2.cca2) return c1.cca2 === c2.cca2;
+        return c1.name.common === c2.name.common;
+    };
 
-    // Find the group containing this country
-    for (const group of SIMILAR_FLAGS) {
-        if (group.includes(correctCode)) {
-            const similarCodes = group.filter(code => code !== correctCode);
-            const similarCountries = similarCodes
-                .map(code => allCountries.find(c => c.cca2 === code))
-                .filter(c => c !== undefined);
+    let pool = [];
 
-            // If we have enough similar countries, use them
-            if (similarCountries.length >= 3) {
-                return similarCountries.slice(0, 3);
-            }
+    // 1. Look for Similar Flags (Only works if we have codes)
+    if (correctCode) {
+        const flagGroup = SIMILAR_FLAGS.find(group => group.includes(correctCode));
+        if (flagGroup) {
+            pool.push(...flagGroup.filter(code => code !== correctCode));
+        }
 
-            // Otherwise, fill with random
-            const remaining = allCountries
-                .filter(c => c.cca2 !== correctCode && !similarCodes.includes(c.cca2))
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 3 - similarCountries.length);
-
-            return [...similarCountries, ...remaining];
+        // 2. Look for Similar Names
+        const nameGroup = SIMILAR_NAMES.find(group => group.includes(correctCode));
+        if (nameGroup) {
+            pool.push(...nameGroup.filter(code => code !== correctCode));
         }
     }
 
-    // No similar group found, return random
-    return allCountries
-        .filter(c => c.name.common !== correctCountry.name.common)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
+    // Convert codes to country objects
+    // If we have codes in pool, find them. 
+    let candidateCountries = [];
+
+    if (pool.length > 0) {
+        candidateCountries = pool
+            .map(code => allCountries.find(c => c.cca2 === code))
+            .filter(c => c !== undefined && !isSameCountry(c, correctCountry));
+    }
+
+    // Remove duplicates
+    candidateCountries = [...new Set(candidateCountries)];
+
+    // 3. Look for Same Subregion/Region
+    // This is the fallback that MUST work even without cca2
+    if (candidateCountries.length < count) {
+        // Filter out existing candidates and the correct country
+        const regionCandidates = allCountries.filter(c =>
+            !isSameCountry(c, correctCountry) &&
+            !candidateCountries.some(cc => isSameCountry(cc, c)) &&
+            (c.subregion === correctCountry.subregion || c.region === correctCountry.region)
+        ).sort(() => Math.random() - 0.5);
+
+        candidateCountries.push(...regionCandidates);
+    }
+
+    // 4. Global fallback
+    if (candidateCountries.length < count) {
+        const remaining = allCountries.filter(c =>
+            !isSameCountry(c, correctCountry) &&
+            !candidateCountries.some(cc => isSameCountry(cc, c))
+        ).sort(() => Math.random() - 0.5);
+        candidateCountries.push(...remaining);
+    }
+
+    // Return exact count
+    return candidateCountries.slice(0, count);
 }
 
 function displayQuestion() {
@@ -393,6 +435,11 @@ function displayQuestion() {
 
     const flagDisplay = document.querySelector('.flag-display');
     const questionText = document.querySelector('.question-text');
+
+    // Reset Question Text Style and Content
+    questionText.className = 'question-text'; // Remove correct/incorrect classes
+    questionText.style.transform = 'scale(1)';
+
     const optionsGrid = document.getElementById('optionsGrid');
     optionsGrid.innerHTML = '';
 
@@ -402,7 +449,9 @@ function displayQuestion() {
         const flagImg = document.getElementById('flagImage');
         flagImg.src = question.flag;
         flagImg.alt = `Bayrak`;
+
         questionText.textContent = state.lang === 'en' ? 'Which country does this flag belong to?' : 'Bu bayrak hangi ülkeye ait?';
+
         optionsGrid.className = 'options-grid';
 
         // Use question.options (Objects) instead of optionNames (Strings)
@@ -419,8 +468,6 @@ function displayQuestion() {
         flagDisplay.querySelector('.flag-card').classList.add('hidden');
 
         // Get translated name for the PROMPT
-        // We need to find the full country object for the correct answer
-        // Luckily we store it in question.info
         const correctNameTranslated = getCountryName(question.info);
 
         const selectText = state.lang === 'en' ? 'Select the flag' : 'bayrağını seçin';
@@ -443,7 +490,7 @@ function displayQuestion() {
         });
     }
 
-    // Hide feedback
+    // Hide old feedback (just in case)
     document.getElementById('feedback').classList.add('hidden');
 }
 
@@ -473,14 +520,15 @@ function checkAnswer(selected) {
     // Compare unique names (name.common)
     const isCorrect = selected === question.correctAnswer;
     const correctCountry = question.info; // The full country object
+    const translatedCorrectName = getCountryName(correctCountry);
 
-    // Disable all buttons and show result
+    // Disable all buttons and update styles
     if (state.gameSettings.mode === 'flagToName') {
         const buttons = document.querySelectorAll('.option-btn');
         buttons.forEach(btn => {
             btn.disabled = true;
 
-            // Check based on data-country, NOT textContent
+            // Check based on data-country
             if (btn.dataset.country === question.correctAnswer) {
                 btn.classList.add('correct');
             } else if (btn.dataset.country === selected && !isCorrect) {
@@ -513,28 +561,23 @@ function checkAnswer(selected) {
 
     updateStatsBar();
 
-    // Show feedback
-    const feedback = document.getElementById('feedback');
-    feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
-    const correctText = state.lang === 'en' ? 'Correct!' : 'Doğru!';
-    const wrongText = state.lang === 'en' ? 'Wrong! Correct answer:' : 'Yanlış! Doğru cevap:';
+    // Show Feedback IN PLACE of the Question Text
+    const questionText = document.querySelector('.question-text');
+    const correctMsg = state.lang === 'en' ? 'Correct!' : 'Doğru!';
+    const wrongMsg = state.lang === 'en' ? 'Wrong! Answer:' : 'Yanlış! Cevap:';
 
-    // Use translated name in feedback
-    const translatedCorrectName = getCountryName(correctCountry);
+    questionText.innerHTML = isCorrect
+        ? `<span style="font-size: 1.5em">✅</span> ${correctMsg} ${translatedCorrectName}`
+        : `<span style="font-size: 1.5em">❌</span> ${wrongMsg} ${translatedCorrectName}`;
 
-    feedback.querySelector('.feedback-content').innerHTML = isCorrect
-        ? `✅ ${correctText} ${translatedCorrectName}`
-        : `❌ ${wrongText} ${translatedCorrectName}`;
-    feedback.classList.remove('hidden');
+    questionText.classList.add(isCorrect ? 'correct' : 'incorrect');
 
     // Check for lives
     if (state.quiz.lives <= 0) {
         setTimeout(() => {
             if (!state.quiz.extraLifeUsed) {
-                // Show extra life modal
                 showExtraLifeModal();
             } else {
-                // Game over
                 showGameOver();
             }
         }, 1500);
@@ -661,6 +704,7 @@ function updateStatsBar() {
 }
 
 async function startQuiz() {
+    document.body.classList.add('game-mode-active');
     document.getElementById('loadingQuiz').classList.remove('hidden');
     document.getElementById('quizContent').classList.add('hidden');
     document.getElementById('quizResults').classList.add('hidden');
@@ -1028,6 +1072,7 @@ function switchView(viewName) {
 }
 
 function showGameSetup() {
+    document.body.classList.remove('game-mode-active');
     // Show Main Menu, hide others
     document.getElementById('mainMenu').classList.remove('hidden');
     document.getElementById('settingsPanel').classList.add('hidden');
@@ -1263,6 +1308,16 @@ function initializeEventListeners() {
 
     // Restart quiz
     document.getElementById('restartQuiz').addEventListener('click', showGameSetup);
+
+    // Game Exit Button
+    const gameExitBtn = document.getElementById('gameExitBtn');
+    if (gameExitBtn) {
+        gameExitBtn.addEventListener('click', () => {
+            if (confirm(state.lang === 'en' ? 'Quit game?' : 'Oyundan çıkmak istiyor musunuz?')) {
+                showGameSetup();
+            }
+        });
+    }
 }
 
 // ==================== //
