@@ -654,7 +654,7 @@ function showResults() {
             ? `🎉 Level ${state.gameSettings.level} completed! Level ${state.gameSettings.level + 1} unlocked!`
             : `🎉 Seviye ${state.gameSettings.level} tamamlandı! Seviye ${state.gameSettings.level + 1} açıldı!`;
 
-        // Unlock next level
+        // Unlock next level //selam
         if (state.gameSettings.level >= state.unlockedLevel) {
             state.unlockedLevel = state.gameSettings.level + 1;
             saveUnlockedLevel();
