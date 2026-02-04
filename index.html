@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldWideFlag - Bayrak Quiz Oyunu | Flag Quiz Game</title>
+    <meta name="description"
+        content="Dünya bayraklarını öğren ve test et! Learn world flags with interactive quiz. Bayrak bilmece, bayrak oyunu, flag quiz game.">
+    <meta name="keywords"
+        content="bayrak, bayraklar, bayrak quiz, bayrak oyunu, bayrak bilmece, flag quiz, flag game, world flags, ülke bayrakları, country flags, WorldWideFlag">
+    <meta name="author" content="WorldWideFlag">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="WorldWideFlag - Flag Quiz Game">
+    <meta property="og:description" content="Learn world flags with interactive quiz! Dünya bayraklarını öğren!">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://flagcdn.com/w320/un.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WorldWideFlag - Flag Quiz Game">
+    <meta name="twitter:description" content="Learn world flags with interactive quiz!">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">🏳️</div>
+                <h1>WorldWideFlag</h1>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-view="quiz">
+                    <span class="icon">🎯</span>
+                    <span class="nav-text" data-tr="Quiz" data-en="Quiz">Quiz</span>
+                </button>
+                <button class="nav-btn" data-view="explore">
+                    <span class="icon">🔍</span>
+                    <span class="nav-text" data-tr="Keşfet" data-en="Explore">Keşfet</span>
+                </button>
+                <button class="nav-btn" data-view="stats">
+                    <span class="icon">📊</span>
+                    <span class="text" data-tr="İstatistikler" data-en="Stats">İstatistikler</span>
+                </button>
+            </nav>
+
+            <div class="header-right">
+                <button class="lang-btn" id="langToggle">
+                    <span class="lang-text">TR</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-label" data-tr="Skor" data-en="Score">Skor</div>
+                <div class="stat-value" id="scoreValue">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" data-tr="Doğru" data-en="Correct">Doğru</div>
+                <div class="stat-value correct" id="correctValue">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" data-tr="Yanlış" data-en="Wrong">Yanlış</div>
+                <div class="stat-value incorrect" id="incorrectValue">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" data-tr="Başarı Oranı" data-en="Accuracy">Başarı Oranı</div>
+                <div class="stat-value" id="accuracyValue">0%</div>
+            </div>
+        </div>
+
+        <!-- Quiz View -->
+        <div class="view active" id="quizView">
+            <div class="quiz-container">
+                <!-- Main Menu - Simplified -->
+                <div class="main-menu" id="mainMenu">
+                    <div class="welcome-section">
+                        <h2 class="welcome-title">
+                            <span class="welcome-emoji">🌍</span>
+                            <span data-tr="Bayrak Ustası Ol!" data-en="Become a Flag Master!">Bayrak Ustası Ol!</span>
+                        </h2>
+                        <p class="welcome-desc" data-tr="Dünya bayraklarını öğren ve test et"
+                            data-en="Learn and test world flags">Dünya bayraklarını öğren ve test et</p>
+                    </div>
+
+                    <!-- Quick Level Selection -->
+                    <div class="quick-level">
+                        <h3 data-tr="Zorluk Seviyesi" data-en="Difficulty Level">Zorluk Seviyesi</h3>
+                        <div class="level-selector">
+                            <input type="range" id="levelSlider" min="1" max="10" value="1">
+                            <div class="level-display">
+                                <span class="level-name" id="levelName">🌱 Çırak</span>
+                                <span class="level-lock hidden" id="levelLock" data-tr="🔒 Kilitli"
+                                    data-en="🔒 Locked">🔒 Kilitli</span>
+                            </div>
+                            <p class="level-info" id="levelInfo">En bilinen ülkeler ile başla</p>
+                        </div>
+                    </div>
+
+                    <!-- Current Settings Display -->
+                    <div class="current-settings">
+                        <div class="setting-badge" id="currentMode">
+                            <span class="badge-icon">🏴</span>
+                            <span data-tr="Bayrak → İsim" data-en="Flag → Name">Bayrak → İsim</span>
+                        </div>
+                        <div class="setting-badge" id="currentRegion">
+                            <span class="badge-icon">🌐</span>
+                            <span data-tr="Tüm Dünya" data-en="World">Tüm Dünya</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-large" id="startGameBtn">
+                            <span class="icon">🚀</span>
+                            <span data-tr="Oyunu Başlat" data-en="Start Game">Oyunu Başlat</span>
+                        </button>
+                        <button class="btn btn-secondary" id="openSettingsBtn">
+                            <span class="icon">⚙️</span>
+                            <span data-tr="Ayarlar" data-en="Settings">Ayarlar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Settings Panel (Hidden by default) -->
+                <div class="settings-panel hidden" id="settingsPanel">
+                    <div class="settings-header">
+                        <h2 data-tr="⚙️ Oyun Ayarları" data-en="⚙️ Game Settings">⚙️ Oyun Ayarları</h2>
+                        <button class="btn-close" id="closeSettingsBtn">✕</button>
+                    </div>
+
+                    <!-- Game Mode Selection -->
+                    <div class="settings-section">
+                        <h3 data-tr="Oyun Modu" data-en="Game Mode">Oyun Modu</h3>
+                        <div class="mode-buttons">
+                            <button class="mode-btn active" data-mode="flagToName">
+                                <span class="mode-icon">🏴</span>
+                                <span class="mode-title" data-tr="Bayrak → İsim" data-en="Flag → Name">Bayrak →
+                                    İsim</span>
+                                <span class="mode-desc" data-tr="Bayrağı gör, ülke ismini seç"
+                                    data-en="See the flag, pick the name">Bayrağı gör, ülke ismini seç</span>
+                            </button>
+                            <button class="mode-btn" data-mode="nameToFlag">
+                                <span class="mode-icon">📝</span>
+                                <span class="mode-title" data-tr="İsim → Bayrak" data-en="Name → Flag">İsim →
+                                    Bayrak</span>
+                                <span class="mode-desc" data-tr="Ülke adını gör, bayrağı seç"
+                                    data-en="See the name, pick the flag">Ülke adını gör, bayrağı seç</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Region Selection -->
+                    <div class="settings-section">
+                        <h3 data-tr="Bölge Seçimi" data-en="Region Selection">Bölge Seçimi</h3>
+                        <div class="region-buttons">
+                            <button class="region-btn active" data-region="all" data-tr="🌐 Tüm Dünya"
+                                data-en="🌐 World">🌐 Tüm Dünya</button>
+                            <button class="region-btn" data-region="Europe" data-tr="🏰 Avrupa" data-en="🏰 Europe">🏰
+                                Avrupa</button>
+                            <button class="region-btn" data-region="Asia" data-tr="🏯 Asya" data-en="🏯 Asia">🏯
+                                Asya</button>
+                            <button class="region-btn" data-region="Americas" data-tr="🗽 Amerika"
+                                data-en="🗽 Americas">🗽 Amerika</button>
+                            <button class="region-btn" data-region="Africa" data-tr="🦁 Afrika" data-en="🦁 Africa">🦁
+                                Afrika</button>
+                            <button class="region-btn" data-region="Oceania" data-tr="🏝️ Okyanusya"
+                                data-en="🏝️ Oceania">🏝️ Okyanusya</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveSettingsBtn">
+                        <span class="icon">✓</span>
+                        <span data-tr="Kaydet" data-en="Save">Kaydet</span>
+                    </button>
+                </div>
+
+                <!-- Hidden game setup for compatibility -->
+                <div class="game-setup hidden" id="gameSetup"></div>
+
+                <div class="loading hidden" id="loadingQuiz">
+                    <div class="spinner"></div>
+                    <p data-tr="Bayraklar yükleniyor..." data-en="Loading flags...">Bayraklar yükleniyor...</p>
+                </div>
+
+                <div class="quiz-content hidden" id="quizContent">
+                    <!-- Top Bar with Progress and Lives -->
+                    <div class="quiz-top-bar">
+                        <div class="question-counter">
+                            <span><span data-tr="Soru" data-en="Question">Soru</span> <span
+                                    id="currentQuestion">1</span> /
+                                <span id="totalQuestions">20</span></span>
+                        </div>
+                        <div class="quiz-lives">
+                            <span id="quizLivesHearts">❤️ ❤️ ❤️</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+
+                    <div class="flag-display">
+                        <div class="flag-card">
+                            <img id="flagImage" src="" alt="Flag">
+                        </div>
+                        <p class="question-text" data-tr="Bu bayrak hangi ülkeye ait?"
+                            data-en="Which country does this flag belong to?">Bu bayrak hangi ülkeye ait?</p>
+                    </div>
+
+                    <div class="options-grid" id="optionsGrid">
+                        <!-- Options will be inserted here -->
+                    </div>
+
+                    <div class="feedback hidden" id="feedback">
+                        <div class="feedback-content"></div>
+                    </div>
+                </div>
+
+                <!-- Extra Life Modal -->
+                <div class="extra-life-modal hidden" id="extraLifeModal">
+                    <div class="extra-life-card">
+                        <div class="extra-life-icon">💔</div>
+                        <h2 data-tr="Son Şans!" data-en="Last Chance!">Son Şans!</h2>
+                        <p data-tr="3 canını da kaybettin! Bir şans daha ister misin?"
+                            data-en="You lost all 3 lives! Want one more chance?">3 canını da kaybettin! Bir şans daha
+                            ister misin?</p>
+                        <div class="extra-life-buttons">
+                            <button class="btn btn-primary" id="extraLifeBtn">
+                                <span class="icon">❤️</span>
+                                <span data-tr="Son Bir Hak!" data-en="One More Chance!">Son Bir Hak!</span>
+                            </button>
+                            <button class="btn btn-secondary" id="giveUpBtn">
+                                <span class="icon">🏳️</span>
+                                <span data-tr="Vazgeç" data-en="Give Up">Vazgeç</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Over Modal -->
+                <div class="game-over-modal hidden" id="gameOverModal">
+                    <div class="game-over-card">
+                        <div class="game-over-icon">💀</div>
+                        <h2 data-tr="Kaybettin!" data-en="Game Over!">Kaybettin!</h2>
+                        <p data-tr="Tüm canlar bitti. Tekrar dene!" data-en="All lives lost. Try again!">Tüm canlar
+                            bitti. Tekrar dene!</p>
+                        <div class="game-over-stats">
+                            <span data-tr="Ulaştığın soru:" data-en="Questions reached:">Ulaştığın soru:</span>
+                            <strong id="gameOverQuestion">0</strong> / <span id="gameOverTotal">20</span>
+                        </div>
+                        <button class="btn btn-primary" id="retryBtn">
+                            <span class="icon">🔄</span>
+                            <span data-tr="Tekrar Dene" data-en="Try Again">Tekrar Dene</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="quiz-results hidden" id="quizResults">
+                    <div class="results-card">
+                        <div class="results-icon">🎉</div>
+                        <h2 data-tr="Quiz Tamamlandı!" data-en="Quiz Completed!">Quiz Tamamlandı!</h2>
+                        <div class="results-score">
+                            <div class="results-percentage" id="resultsPercentage">0%</div>
+                            <p class="results-message" id="resultsMessage">Harika iş!</p>
+                        </div>
+                        <div class="results-details">
+                            <div class="result-detail">
+                                <span data-tr="Doğru Cevaplar:" data-en="Correct Answers:">Doğru Cevaplar:</span>
+                                <strong id="resultsCorrect">0</strong>
+                            </div>
+                            <div class="result-detail">
+                                <span data-tr="Yanlış Cevaplar:" data-en="Wrong Answers:">Yanlış Cevaplar:</span>
+                                <strong id="resultsIncorrect">0</strong>
+                            </div>
+                            <div class="result-detail">
+                                <span data-tr="Toplam Skor:" data-en="Total Score:">Toplam Skor:</span>
+                                <strong id="resultsScore">0</strong>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="restartQuiz">
+                            <span class="icon">🔄</span>
+                            <span data-tr="Yeni Quiz Başlat" data-en="Start New Quiz">Yeni Quiz Başlat</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore View -->
+        <div class="view" id="exploreView">
+            <div class="explore-container">
+                <div class="explore-header">
+                    <h2 data-tr="Tüm Bayrakları Keşfet" data-en="Explore All Flags">Tüm Bayrakları Keşfet</h2>
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Search country..."
+                            data-placeholder-tr="Ülke ismi ara..." data-placeholder-en="Search country...">
+                    </div>
+                    <div class="filter-box">
+                        <label for="regionFilter" data-tr="Bölge:" data-en="Region:">Bölge:</label>
+                        <select id="regionFilter">
+                            <option value="all" data-tr="Tümü" data-en="All">Tümü</option>
+                            <option value="Africa" data-tr="Afrika" data-en="Africa">Afrika</option>
+                            <option value="Americas" data-tr="Amerika" data-en="Americas">Amerika</option>
+                            <option value="Asia" data-tr="Asya" data-en="Asia">Asya</option>
+                            <option value="Europe" data-tr="Avrupa" data-en="Europe">Avrupa</option>
+                            <option value="Oceania" data-tr="Okyanusya" data-en="Oceania">Okyanusya</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="loading" id="loadingExplore">
+                    <div class="spinner"></div>
+                    <p>Bayraklar yükleniyor...</p>
+                </div>
+
+                <div class="countries-grid" id="countriesGrid">
+                    <!-- Countries will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats View -->
+        <div class="view" id="statsView">
+            <div class="stats-container">
+                <h2 data-tr="📊 İstatistikleriniz" data-en="📊 Your Statistics">📊 İstatistikleriniz</h2>
+
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <span class="stats-icon">🎯</span>
+                            <h3 data-tr="Genel Başarı" data-en="Overall Success">Genel Başarı</h3>
+                        </div>
+                        <div class="stats-card-body">
+                            <div class="big-stat">
+                                <div class="big-stat-value" id="totalAccuracy">0%</div>
+                                <div class="big-stat-label" data-tr="Doğruluk Oranı" data-en="Accuracy Rate">Doğruluk
+                                    Oranı</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <span class="stats-icon">🏆</span>
+                            <h3 data-tr="Toplam Başarı" data-en="Total Achievement">Toplam Başarı</h3>
+                        </div>
+                        <div class="stats-card-body">
+                            <div class="stats-row">
+                                <span data-tr="Toplam Oyun:" data-en="Total Games:">Toplam Oyun:</span>
+                                <strong id="totalGames">0</strong>
+                            </div>
+                            <div class="stats-row">
+                                <span data-tr="Toplam Soru:" data-en="Total Questions:">Toplam Soru:</span>
+                                <strong id="totalQuestionsAnswered">0</strong>
+                            </div>
+                            <div class="stats-row">
+                                <span data-tr="Toplam Skor:" data-en="Total Score:">Toplam Skor:</span>
+                                <strong id="totalScore">0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <span class="stats-icon">✅</span>
+                            <h3 data-tr="Doğru/Yanlış" data-en="Correct/Wrong">Doğru/Yanlış</h3>
+                        </div>
+                        <div class="stats-card-body">
+                            <div class="stats-row">
+                                <span data-tr="Toplam Doğru:" data-en="Total Correct:">Toplam Doğru:</span>
+                                <strong class="correct" id="totalCorrect">0</strong>
+                            </div>
+                            <div class="stats-row">
+                                <span data-tr="Toplam Yanlış:" data-en="Total Wrong:">Toplam Yanlış:</span>
+                                <strong class="incorrect" id="totalIncorrect">0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <span class="stats-icon">🎖️</span>
+                            <h3 data-tr="En İyi Skorunuz" data-en="Your Best Score">En İyi Skorunuz</h3>
+                        </div>
+                        <div class="stats-card-body">
+                            <div class="big-stat">
+                                <div class="big-stat-value" id="bestScore">0</div>
+                                <div class="big-stat-label" data-tr="Puan" data-en="Points">Puan</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-danger" id="resetStats">
+                    <span class="icon">🗑️</span>
+                    <span data-tr="İstatistikleri Sıfırla" data-en="Reset Statistics">İstatistikleri Sıfırla</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Country Detail Modal -->
+    <div class="modal hidden" id="countryModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">×</button>
+            <div class="modal-body" id="modalBody">
+                <!-- Country details will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="demo-data.js"></script>
+    <script src="translations.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
