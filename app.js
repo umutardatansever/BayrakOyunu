@@ -19,7 +19,9 @@ const state = {
         totalQuestions: 20,
         lives: 3,
         maxLives: 3,
-        extraLifeUsed: false
+        extraLifeUsed: false,
+        timerInterval: null,
+        timerSeconds: 15
     },
     stats: {
         totalGames: 0,
@@ -430,6 +432,9 @@ function displayQuestion() {
     document.getElementById('currentQuestion').textContent = state.quiz.currentQuestion + 1;
     document.getElementById('totalQuestions').textContent = state.quiz.totalQuestions;
 
+    // Start Timer
+    startQuizTimer();
+
     // Update lives display
     updateLivesDisplay();
 
@@ -521,6 +526,9 @@ function checkAnswer(selected) {
     const isCorrect = selected === question.correctAnswer;
     const correctCountry = question.info; // The full country object
     const translatedCorrectName = getCountryName(correctCountry);
+
+    // Stop Timer
+    stopQuizTimer();
 
     // Disable all buttons and update styles
     if (state.gameSettings.mode === 'flagToName') {
@@ -721,6 +729,38 @@ async function startQuiz() {
         document.getElementById('quizContent').classList.remove('hidden');
 
         updateStatsBar();
+    }
+}
+
+function startQuizTimer() {
+    stopQuizTimer();
+    let timeLeft = 15;
+    const timerDisplay = document.getElementById('timerSeconds');
+    const timerContainer = document.getElementById('quizTimer');
+
+    if (timerDisplay) timerDisplay.textContent = timeLeft;
+    if (timerContainer) timerContainer.classList.remove('warning');
+
+    state.quiz.timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timerDisplay) timerDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 5 && timerContainer) {
+            timerContainer.classList.add('warning');
+        }
+
+        if (timeLeft <= 0) {
+            stopQuizTimer();
+            // Automatically mark as wrong
+            checkAnswer(null);
+        }
+    }, 1000);
+}
+
+function stopQuizTimer() {
+    if (state.quiz.timerInterval) {
+        clearInterval(state.quiz.timerInterval);
+        state.quiz.timerInterval = null;
     }
 }
 
@@ -1377,7 +1417,8 @@ async function init() {
     const plakaState = {
         currentQuestion: 0,
         lives: 3,
-        correctCityIndex: -1
+        correctCityIndex: -1,
+        timerInterval: null
     };
 
     function startPlakaQuiz() {
@@ -1415,6 +1456,9 @@ async function init() {
         const plateNum = (correctIndex + 1).toString().padStart(2, '0');
         document.getElementById('plakaNumber').textContent = plateNum;
 
+        // Start Plaka Timer
+        startPlakaTimer();
+
         // Generate options
         const options = [correctIndex];
         while (options.length < 4) {
@@ -1438,6 +1482,9 @@ async function init() {
         const isCorrect = selectedIdx === plakaState.correctCityIndex;
         const questionText = document.querySelector('#plakaView .question-text');
         const correctCity = TURKEY_CITIES[plakaState.correctCityIndex];
+
+        // Stop Plaka Timer
+        stopPlakaTimer();
 
         const buttons = document.querySelectorAll('#plakaOptions .option-btn');
         buttons.forEach(b => b.disabled = true);
@@ -1465,6 +1512,37 @@ async function init() {
     function updatePlakaLives() {
         const hearts = '❤️'.repeat(Math.max(0, plakaState.lives)) + '🖤'.repeat(Math.max(0, 3 - plakaState.lives));
         document.getElementById('plakaLivesHearts').textContent = hearts;
+    }
+
+    function startPlakaTimer() {
+        stopPlakaTimer();
+        let timeLeft = 15;
+        const timerDisplay = document.getElementById('plakaTimerSeconds');
+        const timerContainer = document.getElementById('plakaTimer');
+
+        if (timerDisplay) timerDisplay.textContent = timeLeft;
+        if (timerContainer) timerContainer.classList.remove('warning');
+
+        plakaState.timerInterval = setInterval(() => {
+            timeLeft--;
+            if (timerDisplay) timerDisplay.textContent = timeLeft;
+
+            if (timeLeft <= 5 && timerContainer) {
+                timerContainer.classList.add('warning');
+            }
+
+            if (timeLeft <= 0) {
+                stopPlakaTimer();
+                checkPlakaAnswer(-1, null);
+            }
+        }, 1000);
+    }
+
+    function stopPlakaTimer() {
+        if (plakaState.timerInterval) {
+            clearInterval(plakaState.timerInterval);
+            plakaState.timerInterval = null;
+        }
     }
 
     document.getElementById('plakaExitBtn').onclick = () => {
