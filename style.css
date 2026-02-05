@@ -1285,17 +1285,23 @@ body {
 
 .quiz-results {
     text-align: center;
-    padding: 2rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: auto;
 }
 
 .results-card {
-    max-width: 600px;
+    max-width: 500px;
+    width: 100%;
     margin: 0 auto;
 }
 
 .results-icon {
-    font-size: 5rem;
-    margin-bottom: 1rem;
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
     animation: bounce 1s infinite;
 }
 
@@ -1307,50 +1313,50 @@ body {
     }
 
     50% {
-        transform: translateY(-20px);
+        transform: translateY(-10px);
     }
 }
 
 .results-card h2 {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     font-family: 'Outfit', sans-serif;
-    margin-bottom: 2rem;
+    margin-bottom: 0.75rem;
 }
 
 .results-score {
-    margin-bottom: 2rem;
+    margin-bottom: 0.75rem;
 }
 
 .results-percentage {
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: 800;
     font-family: 'Outfit', sans-serif;
     background: var(--accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .results-message {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     color: var(--text-secondary);
 }
 
 .results-details {
     background: var(--bg-tertiary);
     border-radius: var(--border-radius);
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .result-detail {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    padding: 0.6rem 0;
     border-bottom: 1px solid var(--glass-border);
-    font-size: 1.125rem;
+    font-size: 1rem;
 }
 
 .result-detail:last-child {
@@ -1358,8 +1364,17 @@ body {
 }
 
 .result-detail strong {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-family: 'Outfit', sans-serif;
+}
+
+/* Game mode active: make results fit viewport */
+body.game-mode-active .quiz-results {
+    height: 100%;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 /* ==================== */
@@ -1732,6 +1747,28 @@ body.game-mode-active .plaka-view {
 body.game-mode-active .quiz-content {
     max-width: 700px;
     width: 100%;
+}
+
+/* Quiz Results in game mode - fit viewport without scroll */
+body.game-mode-active .quiz-results {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
+    z-index: 1001;
+    background: var(--bg-primary);
+}
+
+body.game-mode-active .quiz-results .results-card {
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 /* ==================== */
