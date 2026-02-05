@@ -1345,6 +1345,133 @@ async function init() {
     // Show game setup screen
     showGameSetup();
 
+    // ==================== //
+    // Easter Egg: Plaka Quiz
+    // ==================== //
+    const TURKEY_CITIES = [
+        "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir",
+        "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli",
+        "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari",
+        "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir",
+        "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir",
+        "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat",
+        "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman",
+        "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
+    ];
+
+    let logoClicks = 0;
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.addEventListener('click', () => {
+            logoClicks++;
+            if (logoClicks >= 5) {
+                logoClicks = 0;
+                startPlakaQuiz();
+            }
+            // Reset clicks after 2 seconds of inactivity
+            clearTimeout(logo.clickTimeout);
+            logo.clickTimeout = setTimeout(() => { logoClicks = 0; }, 2000);
+        });
+    }
+
+    const plakaState = {
+        currentQuestion: 0,
+        lives: 3,
+        correctCityIndex: -1
+    };
+
+    function startPlakaQuiz() {
+        document.body.classList.add('game-mode-active');
+        switchView('plaka');
+        plakaState.currentQuestion = 1;
+        plakaState.lives = 3;
+        updatePlakaLives();
+        nextPlakaQuestion();
+    }
+
+    function nextPlakaQuestion() {
+        if (plakaState.lives <= 0) {
+            alert(state.lang === 'tr' ? 'Oyun Bitti!' : 'Game Over!');
+            document.body.classList.remove('game-mode-active');
+            switchView('quiz');
+            return;
+        }
+
+        if (plakaState.currentQuestion > 20) {
+            alert(state.lang === 'tr' ? 'Tebrikler! Tüm plakaları bildin.' : 'Congratulations! You knew all the plates.');
+            document.body.classList.remove('game-mode-active');
+            switchView('quiz');
+            return;
+        }
+
+        const questionText = document.querySelector('#plakaView .question-text');
+        questionText.textContent = state.lang === 'tr' ? 'Bu plaka kodu hangi ile ait?' : 'Which city does this plate code belong to?';
+        questionText.style.color = 'var(--color-1)';
+
+        document.getElementById('plakaCounter').textContent = `${plakaState.currentQuestion}/20`;
+        const correctIndex = Math.floor(Math.random() * 81);
+        plakaState.correctCityIndex = correctIndex;
+
+        const plateNum = (correctIndex + 1).toString().padStart(2, '0');
+        document.getElementById('plakaNumber').textContent = plateNum;
+
+        // Generate options
+        const options = [correctIndex];
+        while (options.length < 4) {
+            const rand = Math.floor(Math.random() * 81);
+            if (!options.includes(rand)) options.push(rand);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        const optionsGrid = document.getElementById('plakaOptions');
+        optionsGrid.innerHTML = '';
+        options.forEach(idx => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = TURKEY_CITIES[idx];
+            btn.onclick = () => checkPlakaAnswer(idx, btn);
+            optionsGrid.appendChild(btn);
+        });
+    }
+
+    function checkPlakaAnswer(selectedIdx, btn) {
+        const isCorrect = selectedIdx === plakaState.correctCityIndex;
+        const questionText = document.querySelector('#plakaView .question-text');
+        const correctCity = TURKEY_CITIES[plakaState.correctCityIndex];
+
+        const buttons = document.querySelectorAll('#plakaOptions .option-btn');
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            btn.style.backgroundColor = 'var(--success)';
+            btn.style.color = 'white';
+            questionText.innerHTML = `✅ ${state.lang === 'tr' ? 'Doğru!' : 'Correct!'} <strong>${correctCity}</strong>`;
+            questionText.style.color = 'var(--success)';
+        } else {
+            btn.style.backgroundColor = 'var(--error)';
+            btn.style.color = 'white';
+            questionText.innerHTML = `❌ ${state.lang === 'tr' ? 'Yanlış! Cevap:' : 'Wrong! Answer:'} <strong>${correctCity}</strong>`;
+            questionText.style.color = 'var(--error)';
+            plakaState.lives--;
+            updatePlakaLives();
+        }
+
+        setTimeout(() => {
+            plakaState.currentQuestion++;
+            nextPlakaQuestion();
+        }, 1500);
+    }
+
+    function updatePlakaLives() {
+        const hearts = '❤️'.repeat(Math.max(0, plakaState.lives)) + '🖤'.repeat(Math.max(0, 3 - plakaState.lives));
+        document.getElementById('plakaLivesHearts').textContent = hearts;
+    }
+
+    document.getElementById('plakaExitBtn').onclick = () => {
+        document.body.classList.remove('game-mode-active');
+        switchView('quiz');
+    };
+
     console.log('✅ App ready!');
 }
 

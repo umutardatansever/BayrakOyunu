@@ -7,9 +7,9 @@ WorldWideFlag, dünya ülkelerinin bayraklarını eğlenceli ve interaktif bir �
 ## 🚀 Canlı Demo
 
 Oyunun canlı versiyonunu buradan deneyebilirsiniz:  
-👉 **[CANLI DEMO LİNKİ BURAYA]**
+👉 **[WorldWideFlag Canlı Demo](https://umutardatansever.github.io/BayrakOyunu/)**
 
-*(Not: GitHub Pages üzerinden yayınlandığında link buraya eklenecektir.)*
+---
 
 ## ✨ Özellikler
 
@@ -35,11 +35,11 @@ Projeyi yerel bilgisayarınızda çalıştırmak için:
 
 1.  Bu repoyu klonlayın:
     ```bash
-    git clone https://github.com/kullaniciadi/WorldWideFlag.git
+    git clone https://github.com/umutardatansever/BayrakOyunu.git
     ```
 2.  Klasöre gidin:
     ```bash
-    cd WorldWideFlag
+    cd BayrakOyunu
     ```
 3.  `index.html` dosyasını tarayıcınızda açın. Hepsi bu kadar!
 
