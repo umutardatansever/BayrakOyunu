@@ -1444,21 +1444,21 @@ async function init() {
     // ==================== //
     // Easter Egg: Unlock All Levels
     // ==================== //
-    let descClicks = 0;
-    const welcomeDesc = document.querySelector('.welcome-desc');
-    if (welcomeDesc) {
-        welcomeDesc.style.cursor = 'pointer'; // Hint that it might be clickable
-        welcomeDesc.style.userSelect = 'none'; // Prevent text selection
+    let titleClicks = 0;
+    const welcomeTitle = document.querySelector('.welcome-title');
+    if (welcomeTitle) {
+        welcomeTitle.style.cursor = 'pointer'; // Hint that it might be clickable
+        welcomeTitle.style.userSelect = 'none'; // Prevent text selection
 
-        welcomeDesc.addEventListener('click', () => {
-            descClicks++;
+        welcomeTitle.addEventListener('click', () => {
+            titleClicks++;
 
             // Visual feedback
-            welcomeDesc.style.opacity = '0.7';
-            setTimeout(() => { welcomeDesc.style.opacity = '1'; }, 100);
+            welcomeTitle.style.opacity = '0.7';
+            setTimeout(() => { welcomeTitle.style.opacity = '1'; }, 100);
 
-            if (descClicks >= 6) {
-                descClicks = 0;
+            if (titleClicks >= 6) {
+                titleClicks = 0;
 
                 // Unlock all levels
                 if (state.unlockedLevel < 10) {
@@ -1470,14 +1470,13 @@ async function init() {
                         ? '🔓 Tüm Kilitler Açıldı! Artık tüm seviyelere erişebilirsin.'
                         : '🔓 All Unlocked! You can now access all levels.';
 
-                    // Use a nice notification instead of alert if possible, or just alert for now as requested "simple"
                     alert(msg);
                 }
             }
 
             // Reset clicks after 2 seconds
-            clearTimeout(welcomeDesc.clickTimeout);
-            welcomeDesc.clickTimeout = setTimeout(() => { descClicks = 0; }, 2000);
+            clearTimeout(welcomeTitle.clickTimeout);
+            welcomeTitle.clickTimeout = setTimeout(() => { titleClicks = 0; }, 2000);
         });
     }
 
@@ -1490,6 +1489,13 @@ async function init() {
     };
 
     function startPlakaQuiz() {
+        // Reset state immediately to prevent "duplicate questions" bug
+        plakaState.currentQuestion = 1;
+        plakaState.lives = 3;
+        plakaState.usedQuestions = [];
+        plakaState.correctCityIndex = -1;
+        updatePlakaLives();
+
         const container = document.querySelector('.container');
         if (container) {
             container.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
@@ -1500,16 +1506,13 @@ async function init() {
                 document.body.classList.add('game-mode-active');
                 switchView('plaka');
                 window.scrollTo(0, 0); // Scroll to top for mobile
-                plakaState.currentQuestion = 1;
-                plakaState.lives = 3;
-                plakaState.usedQuestions = []; // Reset used questions
-                updatePlakaLives();
 
                 container.style.opacity = '1';
                 container.style.transform = 'scale(1)';
                 nextPlakaQuestion();
             }, 500);
         } else {
+            // Fallback if container not found
             document.body.classList.add('game-mode-active');
             switchView('plaka');
             nextPlakaQuestion();
