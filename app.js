@@ -1441,11 +1441,52 @@ async function init() {
         });
     }
 
+    // ==================== //
+    // Easter Egg: Unlock All Levels
+    // ==================== //
+    let descClicks = 0;
+    const welcomeDesc = document.querySelector('.welcome-desc');
+    if (welcomeDesc) {
+        welcomeDesc.style.cursor = 'pointer'; // Hint that it might be clickable
+        welcomeDesc.style.userSelect = 'none'; // Prevent text selection
+
+        welcomeDesc.addEventListener('click', () => {
+            descClicks++;
+
+            // Visual feedback
+            welcomeDesc.style.opacity = '0.7';
+            setTimeout(() => { welcomeDesc.style.opacity = '1'; }, 100);
+
+            if (descClicks >= 6) {
+                descClicks = 0;
+
+                // Unlock all levels
+                if (state.unlockedLevel < 10) {
+                    state.unlockedLevel = 10;
+                    saveUnlockedLevel();
+                    updateLevelLock();
+
+                    const msg = state.lang === 'tr'
+                        ? '🔓 Tüm Kilitler Açıldı! Artık tüm seviyelere erişebilirsin.'
+                        : '🔓 All Unlocked! You can now access all levels.';
+
+                    // Use a nice notification instead of alert if possible, or just alert for now as requested "simple"
+                    alert(msg);
+                }
+            }
+
+            // Reset clicks after 2 seconds
+            clearTimeout(welcomeDesc.clickTimeout);
+            welcomeDesc.clickTimeout = setTimeout(() => { descClicks = 0; }, 2000);
+        });
+    }
+
     const plakaState = {
         currentQuestion: 0,
         lives: 3,
         correctCityIndex: -1,
-        timerInterval: null
+        timerInterval: null,
+        usedQuestions: [] // Track asked questions to prevent duplicates
     };
 
     function startPlakaQuiz() {
@@ -1461,6 +1502,7 @@ async function init() {
                 window.scrollTo(0, 0); // Scroll to top for mobile
                 plakaState.currentQuestion = 1;
                 plakaState.lives = 3;
+                plakaState.usedQuestions = []; // Reset used questions
                 updatePlakaLives();
 
                 container.style.opacity = '1';
@@ -1474,6 +1516,47 @@ async function init() {
         }
     }
 
+    function showPlakaSuccess() {
+        // Manually switch to quiz view and show results
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.nav-btn[data-view="quiz"]').classList.add('active');
+
+        document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+        document.getElementById('quizView').classList.add('active');
+
+        // Hide other containers in quiz view
+        document.getElementById('mainMenu').classList.add('hidden');
+        document.getElementById('settingsPanel').classList.add('hidden');
+        document.getElementById('quizContent').classList.add('hidden');
+        document.getElementById('loadingQuiz').classList.add('hidden');
+        document.getElementById('extraLifeModal').classList.add('hidden');
+        document.getElementById('gameOverModal').classList.add('hidden');
+
+        // Show Results
+        document.getElementById('quizResults').classList.remove('hidden');
+
+        // Calculate Stats
+        const totalQuestions = 20;
+        const incorrect = 3 - plakaState.lives;
+        const correct = totalQuestions - incorrect;
+        const score = correct * 100;
+        const accuracy = Math.round((correct / totalQuestions) * 100);
+
+        // Update DOM
+        document.getElementById('resultsPercentage').textContent = `${accuracy}%`;
+        document.getElementById('resultsCorrect').textContent = correct;
+        document.getElementById('resultsIncorrect').textContent = incorrect;
+        document.getElementById('resultsScore').textContent = score;
+
+        const message = state.lang === 'tr'
+            ? '🎉 Tebrikler! Tüm plakaları bildin.'
+            : '🎉 Congratulations! You knew all the plates.';
+        document.getElementById('resultsMessage').textContent = message;
+
+        // Ensure game mode active style is kept
+        document.body.classList.add('game-mode-active');
+    }
+
     function nextPlakaQuestion() {
         if (plakaState.lives <= 0) {
             alert(state.lang === 'tr' ? 'Oyun Bitti!' : 'Game Over!');
@@ -1483,9 +1566,7 @@ async function init() {
         }
 
         if (plakaState.currentQuestion > 20) {
-            alert(state.lang === 'tr' ? 'Tebrikler! Tüm plakaları bildin.' : 'Congratulations! You knew all the plates.');
-            document.body.classList.remove('game-mode-active');
-            switchView('quiz');
+            showPlakaSuccess();
             return;
         }
 
@@ -1494,8 +1575,15 @@ async function init() {
         questionText.style.color = 'var(--color-1)';
 
         document.getElementById('plakaCounter').textContent = `${plakaState.currentQuestion}/20`;
-        const correctIndex = Math.floor(Math.random() * 81);
+
+        let correctIndex;
+        // Select a unique question
+        do {
+            correctIndex = Math.floor(Math.random() * 81);
+        } while (plakaState.usedQuestions.includes(correctIndex) && plakaState.usedQuestions.length < 81);
+
         plakaState.correctCityIndex = correctIndex;
+        plakaState.usedQuestions.push(correctIndex);
 
         const plateNum = (correctIndex + 1).toString().padStart(2, '0');
         document.getElementById('plakaNumber').textContent = plateNum;
@@ -1509,7 +1597,9 @@ async function init() {
             const rand = Math.floor(Math.random() * 81);
             if (!options.includes(rand)) options.push(rand);
         }
-        options.sort(() => Math.random() - 0.5);
+
+        // Sort options alphabetically by city name
+        options.sort((a, b) => TURKEY_CITIES[a].localeCompare(TURKEY_CITIES[b], 'tr'));
 
         const optionsGrid = document.getElementById('plakaOptions');
         optionsGrid.innerHTML = '';
