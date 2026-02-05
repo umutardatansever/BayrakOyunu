@@ -277,22 +277,37 @@ function generateQuiz() {
 
     const { mode, level, region } = state.gameSettings;
 
-    // Filter countries by region
+    // Filter countries by region first
     let availableCountries = region === 'all'
         ? [...state.countries]
         : state.countries.filter(c => c.region === region);
 
-    // Sort by population (as proxy for "famousness") for level-based selection
-    availableCountries.sort((a, b) => (b.population || 0) - (a.population || 0));
+    // NEW: Filter by difficulty based on game level
+    // Level 1 = difficulty 1 only (easy)
+    // Level 2 = difficulty 1-2
+    // Level 3 = difficulty 1-3
+    // Level 4 = difficulty 1-4
+    // Level 5+ = all difficulties
+    const maxDifficulty = Math.min(level, 5);
+    let levelCountries = availableCountries.filter(c => {
+        const countryDifficulty = c.difficulty || 3; // Default to medium if not set
+        return countryDifficulty <= maxDifficulty;
+    });
 
-    // Apply level-based filtering
+    // Fallback: If not enough countries with difficulty, use population-based sorting
+    if (levelCountries.length < 15) {
+        availableCountries.sort((a, b) => (b.population || 0) - (a.population || 0));
+        const levelConfig = LEVEL_CONFIG[level];
+        const maxIndex = Math.ceil(availableCountries.length * (levelConfig.popularity / 100));
+        levelCountries = availableCountries.slice(0, maxIndex);
+    }
+
+    // Apply special level modes
     const levelConfig = LEVEL_CONFIG[level];
-    const maxIndex = Math.ceil(availableCountries.length * (levelConfig.popularity / 100));
-    let levelCountries = availableCountries.slice(0, maxIndex);
 
     // For higher levels, reverse or shuffle differently
     if (levelConfig.reverse) {
-        levelCountries = availableCountries.slice(-maxIndex).reverse();
+        levelCountries = levelCountries.reverse();
     }
 
     // Similar flags mode - Level 8
@@ -1402,8 +1417,14 @@ async function init() {
     let logoClicks = 0;
     const logo = document.querySelector('.logo');
     if (logo) {
+        logo.style.transition = 'transform 0.2s ease';
         logo.addEventListener('click', () => {
             logoClicks++;
+
+            // Visual feedback
+            logo.style.transform = 'scale(0.95)';
+            setTimeout(() => { logo.style.transform = 'scale(1)'; }, 100);
+
             if (logoClicks >= 5) {
                 logoClicks = 0;
                 startPlakaQuiz();
@@ -1422,12 +1443,28 @@ async function init() {
     };
 
     function startPlakaQuiz() {
-        document.body.classList.add('game-mode-active');
-        switchView('plaka');
-        plakaState.currentQuestion = 1;
-        plakaState.lives = 3;
-        updatePlakaLives();
-        nextPlakaQuestion();
+        const container = document.querySelector('.container');
+        if (container) {
+            container.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            container.style.opacity = '0';
+            container.style.transform = 'scale(1.1)';
+
+            setTimeout(() => {
+                document.body.classList.add('game-mode-active');
+                switchView('plaka');
+                plakaState.currentQuestion = 1;
+                plakaState.lives = 3;
+                updatePlakaLives();
+
+                container.style.opacity = '1';
+                container.style.transform = 'scale(1)';
+                nextPlakaQuestion();
+            }, 500);
+        } else {
+            document.body.classList.add('game-mode-active');
+            switchView('plaka');
+            nextPlakaQuestion();
+        }
     }
 
     function nextPlakaQuestion() {

@@ -1,41 +1,37 @@
-# 🌍 WorldWideFlag - Bayrak Ustası Ol!
-
-<p align="center">
-  <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=1000" alt="WorldWideFlag Banner" width="100%" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-</p>
+# 🌍 WorldWideFlag - Master the Flags!
 
 <p align="center">
   <img src="https://img.shields.io/badge/Version-1.2.0-blue?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Language-Bilingual-orange?style=for-the-badge" alt="Language">
+  <img src="https://img.shields.io/badge/Language-English%20%2F%20Turkish-orange?style=for-the-badge" alt="Language">
 </p>
 
-WorldWideFlag, dünya ülkelerinin bayraklarını eğlenceli ve interaktif bir şekilde öğrenmenizi sağlayan modern, hızlı ve şık bir web tabanlı quiz oyunudur. Glassmorphism tasarımı ve kullanıcı dostu arayüzü ile bayrakları öğrenmek hiç bu kadar keyifli olmamıştı!
+WorldWideFlag is a modern, fast, and stylish web-based quiz game that allows you to learn world flags in a fun and interactive way. With its glassmorphism design and user-friendly interface, learning flags has never been more enjoyable!
 
 ---
 
-## 🚀 Canlı Demo (Live Demo)
+## 🚀 Live Demo
 
-Oyunun güncel versiyonunu buradan hemen deneyebilirsiniz:  
-👉 **[WorldWideFlag'i Başlat!](https://umutardatansever.github.io/BayrakOyunu/)**
+You can try the live version of the game here:  
+👉 **[Launch WorldWideFlag!](https://umutardatansever.github.io/BayrakOyunu/)**
 
 ---
 
-## ✨ Öne Çıkan Özellikler
+## ✨ Key Features
 
-| Özellik | Açıklama |
+| Feature | Description |
 | :--- | :--- |
-| 🏆 **Çeşitli Modlar** | Bayrak -> İsim ve İsim -> Bayrak modları ile kendini test et. |
-| ⏱️ **Zaman Yarışı** | Her soru için 15 saniyelik süre sınırı ile heyecanı artır! |
-| 🛡️ **Seviye Sistemi** | Çıraktan Ustaya 10 farklı zorluk seviyesi ve ilerleme takibi. |
-| 🌎 **Bölge Filtresi** | Kıtalar bazında (Avrupa, Asya, vb.) özelleştirilmiş quizler. |
-| 📱 **Tam Mobil Uyumu** | Her ekran boyutuna tam uyumlu, sıkıştırılmış ve akıcı tasarım. |
-| 🔍 **Keşfet Modu** | Ülkeler hakkında detaylı bilgi alabileceğiniz interaktif ansiklopedi. |
-| 🐣 **Easter Egg** | Türkiye'nin plaka kodlarını içeren gizli Plaka Quiz modunu keşfet! |
+| 🏆 **Multiple Modes** | Test yourself with Flag -> Name and Name -> Flag modes. |
+| ⏱️ **Time Trial** | Increase the excitement with a 15-second time limit for each question! |
+| 🛡️ **Level System** | 10 different difficulty levels from Apprentice to Master with progress tracking. |
+| 🌎 **Region Filter** | Customized quizzes based on continents (Europe, Asia, etc.). |
+| 📱 **Full Mobile Support** | Fully responsive, compressed, and fluid design for every screen size. |
+| 🔍 **Explore Mode** | Interactive encyclopedia where you can get detailed information about countries. |
+| 🐣 **Easter Egg** | Discover the secret Plate Quiz mode featuring Turkey's city plate codes! |
 
 ---
 
-## 🛠️ Kullanılan Teknolojiler
+## 🛠️ Technologies Used
 
 <p align="left">
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" alt="HTML5">
@@ -46,45 +42,45 @@ Oyunun güncel versiyonunu buradan hemen deneyebilirsiniz:
 
 ---
 
-## 📸 Ekran Görüntüleri
+## 📸 Screenshots
 
-*Yakında eklenecektir. Uygulama içi güncel görüntüleri Canlı Demo üzerinden görebilirsiniz.*
+*Coming soon. You can see the latest in-game images via the Live Demo.*
 
 ---
 
-## 📥 Kurulum (Setup)
+## 📥 Setup
 
-Projeyi yerel bilgisayarınızda çalıştırmak oldukça kolaydır:
+Running the project on your local machine is quite easy:
 
-1.  Repoyu klonlayın:
+1.  Clone the repository:
     ```bash
     git clone https://github.com/umutardatansever/BayrakOyunu.git
     ```
-2.  Proje klasörüne girin:
+2.  Navigate to the project folder:
     ```bash
     cd BayrakOyunu
     ```
-3.  `index.html` dosyasını favori tarayıcınızla açın.
+3.  Open the `index.html` file with your favorite browser.
 
 ---
 
-## 🤝 Katkıda Bulunma
+## 🤝 Contributing
 
-Her türlü geri bildirim ve katkıya açığız! 
-1. Projeyi Forklayın.
-2. Yeni bir feature branch oluşturun (`git checkout -b feature/HarikaOzellik`).
-3. Değişikliklerinizi commit edin (`git commit -m 'Yeni özellik eklendi'`).
-4. Branch'inizi pushlayın (`git push origin feature/HarikaOzellik`).
-5. Bir Pull Request açın.
+We welcome all kinds of feedback and contributions! 
+1. Fork the project.
+2. Create a new feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some amazing feature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
 
 ---
 
-## 📄 Lisans
+## 📄 License
 
-Bu proje **MIT Lisansı** altında korunmaktadır. Daha fazla bilgi için `LICENSE` dosyasına göz atabilirsiniz.
+This project is protected under the **MIT License**. For more information, you can check the `LICENSE` file.
 
 ---
 <p align="center">
-  <b>Umut Arda Tansever tarafından ❤️ ile geliştirilmiştir.</b><br>
+  <b>Developed with ❤️ by Umut Arda Tansever.</b><br>
   🏳️👑 WorldWideFlag 🏳️👑
 </p>
