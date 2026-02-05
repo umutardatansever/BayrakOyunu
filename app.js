@@ -239,6 +239,12 @@ function getCountryName(country) {
 async function startQuiz() {
     state.currentView = 'quiz';
 
+    // Enable full screen game mode
+    document.body.classList.add('game-mode-active');
+
+    // Scroll to top for mobile
+    window.scrollTo(0, 0);
+
     // Check if we have enough countries
     if (state.countries.length === 0) {
         await fetchCountries();
@@ -1452,6 +1458,7 @@ async function init() {
             setTimeout(() => {
                 document.body.classList.add('game-mode-active');
                 switchView('plaka');
+                window.scrollTo(0, 0); // Scroll to top for mobile
                 plakaState.currentQuestion = 1;
                 plakaState.lives = 3;
                 updatePlakaLives();
