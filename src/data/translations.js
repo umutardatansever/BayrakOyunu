@@ -1,7 +1,7 @@
 // Global translations for countries
 // Kullanıcının isteği üzerine tüm ülkeler için TR ve EN çevirileri
 
-const COUNTRY_NAMES = {
+export const COUNTRY_NAMES = {
     // Europe
     "Türkiye": { tr: "Türkiye", en: "Turkey" },
     "Almanya": { tr: "Almanya", en: "Germany" },
@@ -124,7 +124,7 @@ const COUNTRY_NAMES = {
 };
 
 // Global Translation Helper
-window.getTranslatedName = function (originalName, lang) {
+export function getTranslatedName(originalName, lang) {
     if (!originalName) return "";
 
     // Check if we have a manual translation

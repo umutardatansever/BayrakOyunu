@@ -1,6 +1,6 @@
 // Comprehensive demo data - 195+ countries with difficulty levels
 // difficulty: 1 = Kolay (Avrupa + Bilinen), 2-3 = Orta, 4-5 = Zor (Az bilinen)
-const DEMO_COUNTRIES = [
+export const DEMO_COUNTRIES = [
     // ===== DIFFICULTY 1: KOLAY - Avrupa + Çok Bilinen =====
     { cca2: "TR", difficulty: 1, name: { common: "Türkiye" }, flags: { png: "https://flagcdn.com/w320/tr.png" }, region: "Asia", subregion: "Western Asia", population: 84339067 },
     { cca2: "DE", difficulty: 1, name: { common: "Almanya" }, flags: { png: "https://flagcdn.com/w320/de.png" }, region: "Europe", subregion: "Western Europe", population: 83240525 },
